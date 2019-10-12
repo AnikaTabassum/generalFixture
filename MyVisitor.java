@@ -1,8 +1,10 @@
 package smellProject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -82,6 +84,7 @@ public class MyVisitor extends VoidVisitorAdapter<Void> {
                 }
                 
                 if (MethodCheck.checkValidityTestMethod(declaredMethod)) {
+                	
                     methodList.add(declaredMethod);
                 }
             }
@@ -98,7 +101,14 @@ public class MyVisitor extends VoidVisitorAdapter<Void> {
     		System.out.println(val.toString());
     	}
     }
-
+    List<String> smellyField= new ArrayList<>();;
+    Map<String, List<String> > mymap= new HashMap<>();
+    public List<String>  getProblemField(){
+    	return smellyField;
+    }
+    
+    
+    //Map <String, String> tempMap=new HashMap<>();
     @Override
     public void visit(MethodDeclaration md, Void arg) {
         if (MethodCheck.checkValidityTestMethod(md)) {
@@ -106,16 +116,32 @@ public class MyVisitor extends VoidVisitorAdapter<Void> {
             super.visit(md, arg);
             amartestMethod = new TestMethod(md.getNameAsString());
             if (variableCount.size() != setupFields.size()) {
+            	
             	amartestMethod.setHasSmell(true);
             	smellyMethodList.add(amartestMethod);
+            	
+	            	for (String seta:setupFields) {
+	            		if (!variableCount.contains(seta)) {
+	            			System.out.println();
+	            			String pop = amartestMethod.getElementName()+" 9has smell for 1variable "+seta;
+	            			
+	            			smellyField.add(pop);
+	            			//System.out.println(pop);
+	            			mymap.put(seta, smellyField);
+	            		}
+	            	}
+	            	
+            	
             }
             
             testMethods.add(amartestMethod);
-            System.out.println(amartestMethod.getElementName()+" has "+amartestMethod.getHasSmell());
+            //System.out.println(amartestMethod.getElementName()+" has "+amartestMethod.getHasSmell());
+            
             currentMethod = null;
             variableCount = new HashSet();
             
         }
+        
     }
     @Override
     public void visit(NameExpr ne, Void arg) {
@@ -123,13 +149,16 @@ public class MyVisitor extends VoidVisitorAdapter<Void> {
     		System.out.println("Method is null");
     	}
     	else{
-    		String methodName=ne.getNameAsString();
-            if (setupFields.contains(methodName) &&!variableCount.contains(methodName)) {
-            	System.out.println(methodName);   
-            	variableCount.add(methodName);
+    		String fieldName=ne.getNameAsString();
+            if (setupFields.contains(fieldName) &&!variableCount.contains(fieldName)) {
+            	//System.out.println(fieldName);   
+            	variableCount.add(fieldName);
                 //System.out.println(currentMethod.getNameAsString() + " : " + n.getName().toString());
             }
+            //System.out.println(amartestMethod.getElementName());
+           
         }
+    	
 
         super.visit(ne, arg);
     }

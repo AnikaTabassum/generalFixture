@@ -8,7 +8,7 @@ public class TestMethod {
     private String methodName;
     private boolean hasSmell;
     private Map<String, String> data;
-
+    private int lineNo;
     public TestMethod(String methodName) {
         this.methodName = methodName;
         data = new HashMap<>();

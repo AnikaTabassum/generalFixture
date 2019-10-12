@@ -4,8 +4,11 @@ import java.io.FileReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Initialization {
 	
@@ -46,17 +49,50 @@ public class Initialization {
         TestingFile tempFile;
         DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         Date date;
-        
+        List <String> smellyMethod= new ArrayList<>();
         tempFile = mySmellDetector.detectSmells(testFile);
         testMethods=mySmellDetector.getMethods();
-        
+         List<String> smellyField;
+         List <String> jjdjd= new ArrayList<>();
+         List <String> jajaj= new ArrayList<>();
+         Map<String, String> mymap= new HashMap<>();
+         Map <String, String> tempMap=new HashMap<>();
+         smellyField=(List<String>) mySmellDetector.getProblemField();
+         for (String s:smellyField) {
+        	 //System.out.println("ajaja"+s);
+        	 int l=s.lastIndexOf("1variable ");
+        	 String temp=s.substring(l+10);
+        	 //System.out.println(s.substring(l+10));
+        	 //smellyMethod.add(temp);
+        	 
+        		 jajaj.add(temp);
+        	 
+        	 l=s.lastIndexOf(" 9has");
+        	 String fieldTemp=s.substring(0,l);
+        	 //System.out.println(fieldTemp);
+        	 jjdjd.add(fieldTemp);
+        	 
+        	
+         }
+         
         for (TestMethod t: testMethods) {
         	columnValues = new ArrayList<>();
-        	System.out.println("oooooooooooooooooooooooooooo"+t.getElementName());
-        	
+        	//System.out.println("oooooooooooooooooooooooooooo"+t.getElementName());
+        
         	columnValues.add(tempFile.getTestFileNameWithoutExtension());
         	columnValues.add(t.getElementName());
         	columnValues.add(String.valueOf(t.getHasSmell()));
+        	for(int i=0;i<jajaj.size();i++) {
+        		//System.out.println("kau"+jajaj.get(i));
+        		
+        		if (jjdjd.get(i).equals(t.getElementName())) {
+        			columnValues.add(jajaj.get(i));
+        			//System.out.println("heon "+jajaj.get(i));
+        		}
+        			
+        	}
+        	
+        	//columnValues.add(smellyField);
         	resultsWriter.writeOutput(columnValues);
         }
         /*for (TestFile file : testFiles) {

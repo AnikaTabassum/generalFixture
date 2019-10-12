@@ -13,15 +13,15 @@ import java.util.*;
 
 public class GeneralFixture {
 
-    private List<TestMethod> smellyMethodList= new ArrayList<>();;
+    private List<TestMethod> smellyMethodList= new ArrayList<>();
     
     private MethodDeclaration setupMethod;
-    private List<MethodDeclaration> methodList= new ArrayList<>();;
+    private List<MethodDeclaration> methodList= new ArrayList<>();
     
-    private List<String> setupFields= new ArrayList<>();;
+    private List<String> setupFields= new ArrayList<>();
     private List<FieldDeclaration> fieldList= new ArrayList<>();
     private List<TestMethod> testMethods= new ArrayList<>();
-    
+    private List<String> smellyField;
     public boolean getHasSmell() {
         return smellyMethodList.stream().filter(x -> x.getHasSmell()).count() >= 1;
     }
@@ -43,6 +43,7 @@ public class GeneralFixture {
         setupFields=amarVisitor.getSetupFields();
         smellyMethodList=amarVisitor.getSmellyMethodList();
         methodList=amarVisitor.getMethodList();
+        smellyField=amarVisitor.getProblemField();
         Optional<BlockStmt> blockStmt = setupMethod.getBody();            
         NodeList nodeList = blockStmt.get().getStatements();
         if (setupMethod==null) {
@@ -59,7 +60,7 @@ public class GeneralFixture {
                     while(k < variables.size()) {
                         if (nodeList.get(i) instanceof ExpressionStmt) {
                             ExpressionStmt expressionStmt = (ExpressionStmt) nodeList.get(i);
-                            System.out.println(expressionStmt.toString());
+                            //System.out.println(expressionStmt.toString());
                             if (expressionStmt.getExpression() instanceof AssignExpr) {
                                 AssignExpr assignExpr = (AssignExpr) expressionStmt.getExpression();
                                 String variableName=variables.get(k).getNameAsString();
@@ -82,11 +83,14 @@ public class GeneralFixture {
         }
         smellPrint();
     }
-
+    
     public void smellPrint() {
     	for (TestMethod val: smellyMethodList) {
     		System.out.println("anika" +val.getElementName());
     	}
+    }
+    public List<String>  getProblemField(){
+    	return smellyField;
     }
     public List<TestMethod> getSmellyElements() {
         return smellyMethodList;
