@@ -1,3 +1,4 @@
+package smellProject;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -6,22 +7,20 @@ import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
-
-
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.Color;
-import javax.swing.*;
 import java.awt.event.*;
-import java.awt.*;
+import java.io.File;
 import java.util.*;
 public class GuiClass implements ActionListener {
 
 	private JFrame frame;
 	private JTextField textField;
-
-
-
+	private JButton btnDetectSmell;
+	private String app = null;
+	private String testFilePath;
+	ArrayList<String> testclasses = new ArrayList<String>();
 	/**
 	 * Launch the application.
 	 */
@@ -49,6 +48,7 @@ public class GuiClass implements ActionListener {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		
 		frame = new JFrame();
 		frame.getContentPane().setForeground(Color.ORANGE);
 		frame.setBounds(100, 100, 460, 388);
@@ -62,26 +62,30 @@ public class GuiClass implements ActionListener {
 		
 		btnSelect.addActionListener(this);
 	    
-		frame.add(btnSelect);
+		frame.getContentPane().add(btnSelect);
 		btnSelect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { 
 				System.out.println("anika");
-				JFileChooser chooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-	            chooser.setCurrentDirectory(new java.io.File("F:\\6th_semester\\testing & quality assurance\\cs3-final-project-master\\cs3-final-project-master\\testFinalProject"));
-	            JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+				
+	            JFileChooser jfc = new JFileChooser();
 	            jfc.setCurrentDirectory(new java.io.File("F:\\6th_semester\\testing & quality assurance\\cs3-final-project-master\\cs3-final-project-master\\testFinalProject"));
-	    		
+	    		jfc.setMultiSelectionEnabled(true);
 	            FileNameExtensionFilter filter = new FileNameExtensionFilter("JAVA FILES", "java");
 	            jfc.setFileFilter(filter);
 	            int returnValue = jfc.showOpenDialog(null);
-	    		// int returnValue = jfc.showSaveDialog(null);
-
-	    		/*if (returnValue == JFileChooser.APPROVE_OPTION) {
-	    			System.out.println("ok");
-	    		}*/
-				if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-	                System.out.println("getCurrentDirectory(): "+ chooser.getCurrentDirectory());
-	                System.out.println("getSelectedFile() : "+ chooser.getSelectedFile());
+	    		
+				if (jfc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+	                System.out.println("getCurrentDirectory(): "+ jfc.getCurrentDirectory());
+	                File[] files = jfc.getSelectedFiles();
+	                for (File f: files) {
+	                	String tc=jfc.getCurrentDirectory()+"\\"+f.getName();
+	                	testclasses.add(tc);
+	                	System.out.println(tc);
+	                }
+	                System.out.println("getSelectedFile() : "+ jfc.getSelectedFile());
+	                app=jfc.getSelectedFile().toString();
+	                testFilePath=jfc.getSelectedFile().toString();
+	                
 	            } else {
 	                System.out.println("No Selection ");
 	            }
@@ -97,9 +101,28 @@ public class GuiClass implements ActionListener {
 		textField.setColumns(10);
 		
 		JLabel lblGeneralFixture = new JLabel("General Fixture");
-		lblGeneralFixture.setFont(new Font("Tempus Sans ITC", Font.BOLD, 17));
-		lblGeneralFixture.setBounds(150, 41, 136, 43);
+		lblGeneralFixture.setFont(new Font("Tempus Sans ITC", Font.BOLD, 20));
+		lblGeneralFixture.setBounds(150, 41, 196, 43);
 		frame.getContentPane().add(lblGeneralFixture);
+		
+		btnDetectSmell = new JButton("detect smell");
+		btnDetectSmell.setBounds(126, 263, 184, 25);
+		frame.getContentPane().add(btnDetectSmell);
+		
+		btnDetectSmell.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) { 
+				System.out.println("popo");
+				Initialization init= new Initialization(app, testFilePath);
+				init.createTestFile();
+				try {
+					init.writeResult();
+				} catch (Throwable e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+		});
 	}
 
 	@Override
