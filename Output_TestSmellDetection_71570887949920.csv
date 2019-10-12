@@ -1,0 +1,4 @@
+Test file name,Method name,Has smell
+PersonControllerTest,testAddPerson,true
+PersonControllerTest,testDeletePerson,true
+PersonControllerTest,testAddPerson2,false
