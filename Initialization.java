@@ -15,21 +15,24 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 public class Initialization {
 	
 	public static String app;
-	public static String testFilePath;
+	//public static String testFilePath;
 	public TestingFile testFile;
-	public List<TestingFile> testFiles = new ArrayList<>();
+	
+	ArrayList<String> testclasses = new ArrayList<String>();
+	public List<TestingFile> allTestFiles = new ArrayList<>();
 	public SmellDetector mySmellDetector = new SmellDetector();
 	private List<TestMethod> testMethods= new ArrayList<>();
 	WriteHelper resultsWriter ;
-	public Initialization(String app, String testFilePath) {
+	public Initialization(String app, ArrayList<String> testclasses) {
 		this.app=app;
-		this.testFilePath=testFilePath;
+		this.testclasses=testclasses;
 	}
 	
 	public void createTestFile() {
-		
-		testFile= new TestingFile(testFilePath);
-		 testFiles.add(testFile);
+		for (String testFilePath: testclasses) {
+			testFile= new TestingFile(testFilePath);
+			allTestFiles.add(testFile);
+		}
 		//System.out.println("done");
 	}
 	
@@ -40,10 +43,11 @@ public class Initialization {
         List<String> columnValues;
 
         //columnNames = testSmellDetector.getTestSmellNames();
-        columnNames.add(0, "Test file name");
-        columnNames.add(1, "Method name");
-        columnNames.add(2, "Has smell");
-        columnNames.add(3,"Line no");
+        columnNames.add(0, "Test_file_name");
+        columnNames.add(1, "Method_name");
+        columnNames.add(2, "Has_smell");
+        columnNames.add(3,"Line_no");
+        columnNames.add(4,"smelly_variable");
         
 
         resultsWriter.writeOutput(columnNames);
@@ -52,10 +56,13 @@ public class Initialization {
           Iterate through all test files to detect smells and then write the output
         */
         TestingFile tempFile;
-        DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-        Date date;
-        List <String> smellyMethod= new ArrayList<>();
-        tempFile = mySmellDetector.detectSmells(testFile);
+        //DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+        //Date date;
+        //List <String> smellyMethod= new ArrayList<>();
+        for (TestingFile anikaTestFile:allTestFiles) {
+        	
+        tempFile = mySmellDetector.detectSmells(anikaTestFile);
+        boolean hasSetup=mySmellDetector.getHasSetup();
         testMethods=mySmellDetector.getMethods();
         methodList=mySmellDetector.getMethodList();
          List<String> smellyField;
@@ -80,6 +87,12 @@ public class Initialization {
         	 
         	
          }
+         if (hasSetup==false) {
+        	 columnValues = new ArrayList<>();
+        	 columnValues.add(anikaTestFile.getTestFileNameWithoutExtension());
+        	 columnValues.add("No setup method exists");
+        	 resultsWriter.writeOutput(columnValues);
+         }
          
         for (TestMethod t: testMethods) {
         	columnValues = new ArrayList<>();
@@ -91,25 +104,30 @@ public class Initialization {
         	for (MethodDeclaration m:methodList) {
         		if (m.getNameAsString().equals(t.getElementName())) {
         			int methodLineNumber = m.getBegin().get().line;
+        			int methodEndNumber=m.getEnd().get().line;
         			if(t.getHasSmell()) {
-        				columnValues.add("problem in line no "+methodLineNumber);
+        				columnValues.add("problem in line no "+methodLineNumber+" to "+methodEndNumber);
         			}
         		}
         			
         	}
-        	
+        	String addin="";
         	for(int i=0;i<jajaj.size();i++) {
         		//System.out.println("kau"+jajaj.get(i));
         		
         		if (jjdjd.get(i).equals(t.getElementName())) {
-        			columnValues.add(jajaj.get(i));
-        			//System.out.println("heon "+jajaj.get(i));
+        			addin+=jajaj.get(i)+"+-+-+";
+        			        			//System.out.println("heon "+jajaj.get(i));
         		}
         			
         	}
+        	System.out.println("ad "+addin);
+        	columnValues.add(addin);
+
         	
         	//columnValues.add(smellyField);
         	resultsWriter.writeOutput(columnValues);
+        }
         }
         /*for (TestFile file : testFiles) {
             date = new Date();

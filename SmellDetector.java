@@ -14,6 +14,7 @@ public class SmellDetector {
 	private List<TestMethod> testMethods= new ArrayList<>();
 	private List<MethodDeclaration> methodList;
 	List<String> smellyField;
+	boolean hasSetup;
 	public TestingFile detectSmells(TestingFile testFile) throws IOException {
         CompilationUnit myComp=null;
         FileInputStream fis;
@@ -25,7 +26,8 @@ public class SmellDetector {
             myComp = JavaParser.parse(fis);
         }
         GeneralFixture gf= new GeneralFixture();
-        gf.runAnalysis(myComp,testFile.getTestFileNameWithoutExtension());
+        hasSetup=gf.runAnalysis(myComp,testFile.getTestFileNameWithoutExtension());
+        System.out.println("lllllllllllllllll"+hasSetup);
         testMethods=gf.getMethods();
         smellyField=gf.getProblemField();
         methodList=gf.getMethodList();
@@ -33,6 +35,11 @@ public class SmellDetector {
         return testFile;
 
     }
+	
+	public boolean getHasSetup() {
+		System.out.println(hasSetup);
+		return hasSetup;
+	}
 	public List<String>  getProblemField(){
     	return smellyField;
     }

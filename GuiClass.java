@@ -9,6 +9,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import java.awt.Font;
@@ -22,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JTable;
+import javax.swing.border.MatteBorder;
 public class GuiClass implements ActionListener {
 
 	private JFrame frame;
@@ -31,7 +33,8 @@ public class GuiClass implements ActionListener {
 	ArrayList<String> testclasses = new ArrayList<String>();
 	private JTable table;
 	public  String filePath="";
-	JScrollPane scrollPane = new JScrollPane(table);
+	public JPanel JPContainer = new JPanel();
+	
 	
 	/**
 	 * Launch the application.
@@ -69,10 +72,12 @@ public class GuiClass implements ActionListener {
             // get the columns name from the first line
             // set columns name to the jtable model
             String firstLine = br.readLine().trim();
+            System.out.println(firstLine);
             String[] columnsName = firstLine.split(",");
+            
             DefaultTableModel model = (DefaultTableModel)table.getModel();
             model.setColumnIdentifiers(columnsName);
-            
+            model.addRow(columnsName);
             // get lines from txt file
             Object[] tableLines = br.lines().toArray();
             
@@ -82,6 +87,19 @@ public class GuiClass implements ActionListener {
             {
                 String line = tableLines[i].toString().trim();
                 String[] dataRow = line.split(",");
+                int x=0;
+                for (String c:dataRow) {
+                	System.out.println(c);
+                	if (c.contains("+-+-+")) {
+                		System.out.println("x"+x+dataRow[x]);
+                		
+                		c=c.replace("+-+-+", ",");
+                	}
+                	
+                	dataRow[x]=c;
+                	System.out.println("x"+x+dataRow[x]);
+                	x++;
+                }
                 model.addRow(dataRow);
             }
             
@@ -97,7 +115,7 @@ public class GuiClass implements ActionListener {
 		frame = new JFrame();
 		frame.getContentPane().setBackground(new Color(255, 255, 224));
 		frame.getContentPane().setForeground(Color.ORANGE);
-		frame.setBounds(100, 100, 1050, 690);
+		frame.setBounds(100, 100, 1200, 690);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -146,7 +164,7 @@ public class GuiClass implements ActionListener {
 		
 		JLabel lblGeneralFixture = new JLabel("General Fixture");
 		lblGeneralFixture.setFont(new Font("Tempus Sans ITC", Font.BOLD, 44));
-		lblGeneralFixture.setBounds(150, 41, 323, 43);
+		lblGeneralFixture.setBounds(363, 41, 323, 43);
 		frame.getContentPane().add(lblGeneralFixture);
 		
 		btnDetectSmell = new JButton("Detect smell");
@@ -172,13 +190,20 @@ public class GuiClass implements ActionListener {
 		
 		
 		table = new JTable();
+		table.setBorder(new MatteBorder(3, 3, 3, 3, (Color) new Color(75, 0, 130)));
 		table.setBackground(new Color(230, 230, 250));
-		table.setBounds(12, 201, 1008, 429);
-		//frame.add(new JScrollPane(table)); 
+		table.setFont(new Font("AppleGothic", Font.BOLD,15));
+		table.setRowHeight(30);
+		table.setBounds(12, 201, 1165, 429);
+		JScrollPane scrollPane = new JScrollPane(table);
+		JPContainer.add(scrollPane);
+		frame.getContentPane().add(table); 
         //frame.pack(); 
+		table.setDefaultEditor(Object.class, null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         frame.setVisible(true);
-		frame.getContentPane().add(table);
+        frame.setResizable(false);
+		//frame.getContentPane().add(JPContainer);
 		btnNewButton.setBounds(822, 130, 173, 36);
 		frame.getContentPane().add(btnNewButton);
 		
@@ -189,7 +214,7 @@ public class GuiClass implements ActionListener {
 		btnDetectSmell.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { 
 				System.out.println("popo");
-				Initialization init= new Initialization(app, testFilePath);
+				Initialization init= new Initialization(app, testclasses);
 				init.createTestFile();
 				
 				

@@ -34,7 +34,7 @@ public class GeneralFixture {
     }
 
    // public void checkForSmell()
-    public void runAnalysis(CompilationUnit testFileCompilationUnit, String testFileName) throws FileNotFoundException {
+    public boolean runAnalysis(CompilationUnit testFileCompilationUnit, String testFileName) throws FileNotFoundException {
     	MyVisitor amarVisitor= new MyVisitor(methodList,setupMethod, setupFields,smellyMethodList, fieldList);
     	amarVisitor.visit(testFileCompilationUnit, null); //This call will populate the list of test methods and identify the setup method [visit(ClassOrInterfaceDeclaration n)]
     	testMethods=amarVisitor.getMethods();
@@ -44,13 +44,15 @@ public class GeneralFixture {
         smellyMethodList=amarVisitor.getSmellyMethodList();
         methodList=amarVisitor.getMethodList();
         smellyField=amarVisitor.getProblemField();
-        Optional<BlockStmt> blockStmt = setupMethod.getBody();            
-        NodeList nodeList = blockStmt.get().getStatements();
+        Optional<BlockStmt> blockStmt ;   
+        NodeList nodeList;
         if (setupMethod==null) {
         	System.out.println("there is no setup method in the test class");
+        	return false;
         }
         else {
-            
+        	blockStmt = setupMethod.getBody();            
+            nodeList = blockStmt.get().getStatements();
             int i=0;
             while (i<nodeList.size()){
                 int j=0;
@@ -82,6 +84,7 @@ public class GeneralFixture {
         	amarVisitor.visit(method, null);
         }
         smellPrint();
+        return true;
     }
     
     public List<MethodDeclaration> getMethodList(){
