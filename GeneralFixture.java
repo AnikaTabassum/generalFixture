@@ -84,6 +84,10 @@ public class GeneralFixture {
         smellPrint();
     }
     
+    public List<MethodDeclaration> getMethodList(){
+		return methodList;  	
+    }
+    
     public void smellPrint() {
     	for (TestMethod val: smellyMethodList) {
     		System.out.println("anika" +val.getElementName());

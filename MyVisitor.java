@@ -75,6 +75,8 @@ public class MyVisitor extends VoidVisitorAdapter<Void> {
             if (bodymembers.get(i) instanceof MethodDeclaration) {
             	declaredMethod = (MethodDeclaration) bodymembers.get(i);
 
+            	
+            	//System.out.println(declaredMethod.getNameAsString()+"lisaaaaaaaaaa"+methodLineNumber);
                 if (MethodCheck.isValidSetupMethod(declaredMethod)) {
                 	boolean flag=declaredMethod.getBody().isPresent();
                     if (flag==true) {
@@ -83,8 +85,7 @@ public class MyVisitor extends VoidVisitorAdapter<Void> {
                     }
                 }
                 
-                if (MethodCheck.checkValidityTestMethod(declaredMethod)) {
-                	
+                if (MethodCheck.checkValidityTestMethod(declaredMethod)) {      	
                     methodList.add(declaredMethod);
                 }
             }

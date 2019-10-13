@@ -22,8 +22,4 @@ public class TestingFile {
         return fileName.substring(0,lastIndex);
     }
 
-   
-   
-
-
 }

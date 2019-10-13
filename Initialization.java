@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.javaparser.ast.body.MethodDeclaration;
+
 public class Initialization {
 	
 	public static String app;
@@ -18,6 +20,7 @@ public class Initialization {
 	public List<TestingFile> testFiles = new ArrayList<>();
 	public SmellDetector mySmellDetector = new SmellDetector();
 	private List<TestMethod> testMethods= new ArrayList<>();
+	WriteHelper resultsWriter ;
 	public Initialization(String app, String testFilePath) {
 		this.app=app;
 		this.testFilePath=testFilePath;
@@ -29,9 +32,10 @@ public class Initialization {
 		 testFiles.add(testFile);
 		//System.out.println("done");
 	}
-    
+	
+	private List<MethodDeclaration> methodList;
     public void writeResult() throws Throwable    {
-    	WriteHelper resultsWriter = new WriteHelper();
+    	resultsWriter = new WriteHelper();
         List<String> columnNames= new ArrayList<>();;
         List<String> columnValues;
 
@@ -39,6 +43,7 @@ public class Initialization {
         columnNames.add(0, "Test file name");
         columnNames.add(1, "Method name");
         columnNames.add(2, "Has smell");
+        columnNames.add(3,"Line no");
         
 
         resultsWriter.writeOutput(columnNames);
@@ -52,12 +57,13 @@ public class Initialization {
         List <String> smellyMethod= new ArrayList<>();
         tempFile = mySmellDetector.detectSmells(testFile);
         testMethods=mySmellDetector.getMethods();
+        methodList=mySmellDetector.getMethodList();
          List<String> smellyField;
          List <String> jjdjd= new ArrayList<>();
          List <String> jajaj= new ArrayList<>();
          Map<String, String> mymap= new HashMap<>();
          Map <String, String> tempMap=new HashMap<>();
-         smellyField=(List<String>) mySmellDetector.getProblemField();
+         smellyField=mySmellDetector.getProblemField();
          for (String s:smellyField) {
         	 //System.out.println("ajaja"+s);
         	 int l=s.lastIndexOf("1variable ");
@@ -82,6 +88,16 @@ public class Initialization {
         	columnValues.add(tempFile.getTestFileNameWithoutExtension());
         	columnValues.add(t.getElementName());
         	columnValues.add(String.valueOf(t.getHasSmell()));
+        	for (MethodDeclaration m:methodList) {
+        		if (m.getNameAsString().equals(t.getElementName())) {
+        			int methodLineNumber = m.getBegin().get().line;
+        			if(t.getHasSmell()) {
+        				columnValues.add("problem in line no "+methodLineNumber);
+        			}
+        		}
+        			
+        	}
+        	
         	for(int i=0;i<jajaj.size();i++) {
         		//System.out.println("kau"+jajaj.get(i));
         		
