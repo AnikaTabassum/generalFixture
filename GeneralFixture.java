@@ -22,9 +22,7 @@ public class GeneralFixture {
     private List<FieldDeclaration> fieldList= new ArrayList<>();
     private List<TestMethod> testMethods= new ArrayList<>();
     private List<String> smellyField;
-    public boolean getHasSmell() {
-        return smellyMethodList.stream().filter(x -> x.getHasSmell()).count() >= 1;
-    }
+    
     
     
     public List<TestMethod> getMethods(){
@@ -36,9 +34,10 @@ public class GeneralFixture {
    // public void checkForSmell()
     public boolean runAnalysis(CompilationUnit testFileCompilationUnit, String testFileName) throws FileNotFoundException {
     	MyVisitor amarVisitor= new MyVisitor(methodList,setupMethod, setupFields,smellyMethodList, fieldList);
-    	amarVisitor.visit(testFileCompilationUnit, null); //This call will populate the list of test methods and identify the setup method [visit(ClassOrInterfaceDeclaration n)]
+    	amarVisitor.visit(testFileCompilationUnit, null);
     	testMethods=amarVisitor.getMethods();
         setupMethod=amarVisitor.getSetupMethod();
+        
         fieldList=amarVisitor.getFieldList();
         setupFields=amarVisitor.getSetupFields();
         smellyMethodList=amarVisitor.getSmellyMethodList();
@@ -83,7 +82,7 @@ public class GeneralFixture {
         for (MethodDeclaration method : methodList) {
         	amarVisitor.visit(method, null);
         }
-        smellPrint();
+        //smellPrint();
         return true;
     }
     

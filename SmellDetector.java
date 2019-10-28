@@ -19,19 +19,25 @@ public class SmellDetector {
         CompilationUnit myComp=null;
         FileInputStream fis;
         String filePath=testFile.getTestFilePath();
+        System.out.println("ppppppppppppppp//////////// "+filePath);
+        //filePath=null;
+        //filePath="E:\\6thsem\\3.testing\\cs3-final-project-master\\cs3-final-project-master\\testFinalProject\\TestLLNode.java";
         if(filePath!=null) {
+        	
             fis = new FileInputStream(filePath);
             //System.out.println("this line");
             System.out.println(filePath);
             myComp = JavaParser.parse(fis);
         }
         GeneralFixture gf= new GeneralFixture();
-        hasSetup=gf.runAnalysis(myComp,testFile.getTestFileNameWithoutExtension());
-        System.out.println("lllllllllllllllll"+hasSetup);
+        //testFile.setTestFileNameWithoutExtension(fileNameWithoutExtension);
+        String testFileName=testFile.getTestFileNameWithoutExtension();
+        hasSetup=gf.runAnalysis(myComp,testFileName);
+        //System.out.println("lllllllllllllllll"+hasSetup);
         testMethods=gf.getMethods();
         smellyField=gf.getProblemField();
         methodList=gf.getMethodList();
-        //System.out.println(gf.toString());
+        
         return testFile;
 
     }
@@ -45,10 +51,10 @@ public class SmellDetector {
     }
 	
 	public List<MethodDeclaration> getMethodList(){
-		for (MethodDeclaration m:methodList) {
+		/*for (MethodDeclaration m:methodList) {
     		System.out.println(m.getNameAsString());
     			
-    	}
+    	}*/
 		return methodList;  	
     }
     

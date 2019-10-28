@@ -9,7 +9,7 @@ import java.util.List;
 public class WriteHelper {
 	public String time =  String.valueOf(Calendar.DAY_OF_WEEK)+String.valueOf(Calendar.getInstance().getTimeInMillis());
     
-    public String outputFile= MessageFormat.format("{0}_{1}_{2}.{3}", "Output","generalFixture",time, "csv");
+    public String outputFile= MessageFormat.format("{0}-{1}-{2}.{3}", "testSmell","generalFixture",time, "csv");
     public FileWriter writer = new FileWriter(outputFile,false);
 
     public WriteHelper() throws IOException {

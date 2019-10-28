@@ -1,12 +1,14 @@
 package smellProject;
 import java.awt.EventQueue;
 
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.google.common.base.Strings;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,11 +19,9 @@ import java.awt.Color;
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javax.swing.JTable;
 import javax.swing.border.MatteBorder;
 public class GuiClass implements ActionListener {
@@ -29,7 +29,7 @@ public class GuiClass implements ActionListener {
 	private JFrame frame;
 	private JButton btnDetectSmell;
 	private String app = null;
-	private String testFilePath;
+	private String testFilePath=null;
 	ArrayList<String> testclasses = new ArrayList<String>();
 	private JTable table;
 	public  String filePath="";
@@ -68,36 +68,31 @@ public class GuiClass implements ActionListener {
         
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
-            // get the first line
-            // get the columns name from the first line
-            // set columns name to the jtable model
             String firstLine = br.readLine().trim();
-            System.out.println(firstLine);
+            //System.out.println(firstLine);
             String[] columnsName = firstLine.split(",");
             
             DefaultTableModel model = (DefaultTableModel)table.getModel();
             model.setColumnIdentifiers(columnsName);
             model.addRow(columnsName);
-            // get lines from txt file
+
             Object[] tableLines = br.lines().toArray();
-            
-            // extratct data from lines
-            // set data to jtable model
+
             for(int i = 0; i < tableLines.length; i++)
             {
                 String line = tableLines[i].toString().trim();
                 String[] dataRow = line.split(",");
                 int x=0;
                 for (String c:dataRow) {
-                	System.out.println(c);
+                	//System.out.println(c);
                 	if (c.contains("+-+-+")) {
-                		System.out.println("x"+x+dataRow[x]);
+                		//System.out.println("x"+x+dataRow[x]);
                 		
                 		c=c.replace("+-+-+", ",");
                 	}
                 	
                 	dataRow[x]=c;
-                	System.out.println("x"+x+dataRow[x]);
+                	//System.out.println("x"+x+dataRow[x]);
                 	x++;
                 }
                 model.addRow(dataRow);
@@ -110,6 +105,8 @@ public class GuiClass implements ActionListener {
     
 	
 	}
+	public File projectDir;
+	public List <String >testWithFullPath= new ArrayList<String>();
 	private void initialize() {
 		
 		frame = new JFrame();
@@ -128,37 +125,81 @@ public class GuiClass implements ActionListener {
 		btnSelect.setBounds(45, 130, 173, 36);
 		
 		btnSelect.addActionListener(this);
-	    
+		 
 		frame.getContentPane().add(btnSelect);
 		btnSelect.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) { 
-				System.out.println("anika");
+			
+		public void actionPerformed(ActionEvent e) { 
+				//System.out.println("anika");
 				
 	            JFileChooser jfc = new JFileChooser();
 	            jfc.setCurrentDirectory(new java.io.File("F:\\6th_semester\\testing & quality assurance\\cs3-final-project-master\\cs3-final-project-master\\testFinalProject"));
-	    		jfc.setMultiSelectionEnabled(true);
-	            FileNameExtensionFilter filter = new FileNameExtensionFilter("JAVA FILES", "java");
-	            jfc.setFileFilter(filter);
+	    		
+	            jfc.setMultiSelectionEnabled(true);
+	    		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	            //FileNameExtensionFilter filter = new FileNameExtensionFilter("JAVA FILES", "java");
+	            //jfc.setFileFilter(filter);
 	            int returnValue = jfc.showOpenDialog(null);
 	    		
 				if (jfc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-	                System.out.println("getCurrentDirectory(): "+ jfc.getCurrentDirectory());
+					
+	                //System.out.println("getCurrentDirectory(): "+ jfc.getCurrentDirectory());
 	                File[] files = jfc.getSelectedFiles();
+	                projectDir = new File(jfc.getSelectedFile().toString());
+	                System.out.println("----------------------------"+projectDir);
+	                /*--------------------------------------------
 	                for (File f: files) {
 	                	String tc=jfc.getCurrentDirectory()+"\\"+f.getName();
 	                	testclasses.add(tc);
-	                	System.out.println(tc);
+	                	//System.out.println(tc);
 	                }
-	                System.out.println("getSelectedFile() : "+ jfc.getSelectedFile());
+	                //System.out.println("getSelectedFile() : "+ jfc.getSelectedFile());
 	                app=jfc.getSelectedFile().toString();
 	                testFilePath=jfc.getSelectedFile().toString();
+	                System.out.println(testFilePath);
+	                ---------------------------------------------------*/
 	                
 	            } else {
 	                System.out.println("No Selection ");
 	            }
+				
+				
+		        new DirExplorer((level, path, file) -> path.endsWith(".java") && (path.contains("Test") || path.contains("test")),
+		        		(level, path, file) -> {
+		        			String temp=path;
+		        			temp=temp.replace("/", "\\\\");
+		        			temp=projectDir+temp;
+		        		testWithFullPath.add(temp);
+		            System.out.println("paaaaaaaaaaaaaaattttttttttttthhhhhhhhhhhh "+temp);
+		            //System.out.println(Strings.repeat("=", path.length()));
+		            
+		           
+		                try {
+							new VoidVisitorAdapter<Object>() {
+							    @Override
+							    public void visit(ClassOrInterfaceDeclaration n, Object arg) {
+							        super.visit(n, arg);
+							        //System.out.println(" * " + n.getName());
+							        testclasses.add( n.getName().asString());
+							    }
+							}.visit(JavaParser.parse(file), null);
+						} catch (FileNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+		                System.out.println(); // empty line
+
+		            
+		            
+		        }).explore(projectDir);
+		        
+		        for(String t:testclasses) {
+					System.out.println("fsadf "+t);
+				}
 			}
 			     
 	    } );
+		
 		
 		frame.getContentPane().add(btnSelect);
 		
@@ -213,8 +254,8 @@ public class GuiClass implements ActionListener {
 		
 		btnDetectSmell.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { 
-				System.out.println("popo");
-				Initialization init= new Initialization(app, testclasses);
+				//System.out.println("popo");
+				Initialization init= new Initialization(testWithFullPath, testclasses);
 				init.createTestFile();
 				
 				
@@ -225,7 +266,7 @@ public class GuiClass implements ActionListener {
 					e1.printStackTrace();
 				}
 				filePath=init.resultsWriter.outputFile;
-				System.out.println(filePath);
+				//System.out.println(filePath);
 				
 			}
 		});
