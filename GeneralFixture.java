@@ -22,10 +22,16 @@ public class GeneralFixture {
     private List<FieldDeclaration> fieldList= new ArrayList<>();
     private List<TestMethod> testMethods= new ArrayList<>();
     private List<String> smellyField;
+    public String filePath;
     
     
     
-    public List<TestMethod> getMethods(){
+    public GeneralFixture(String filePath) {
+		// TODO Auto-generated constructor stub
+    	this.filePath=filePath;
+	}
+
+	public List<TestMethod> getMethods(){
     	
 		return testMethods;
     	
@@ -33,7 +39,7 @@ public class GeneralFixture {
 
    // public void checkForSmell()
     public boolean runAnalysis(CompilationUnit testFileCompilationUnit, String testFileName) throws FileNotFoundException {
-    	MyVisitor amarVisitor= new MyVisitor(methodList,setupMethod, setupFields,smellyMethodList, fieldList);
+    	MyVisitor amarVisitor= new MyVisitor(methodList,setupMethod, setupFields,smellyMethodList, fieldList,  filePath);
     	amarVisitor.visit(testFileCompilationUnit, null);
     	testMethods=amarVisitor.getMethods();
         setupMethod=amarVisitor.getSetupMethod();
@@ -89,7 +95,9 @@ public class GeneralFixture {
     public List<MethodDeclaration> getMethodList(){
 		return methodList;  	
     }
-    
+    public List<FieldDeclaration> getFieldList() {
+    	return fieldList;
+    }
     public void smellPrint() {
     	for (TestMethod val: smellyMethodList) {
     		System.out.println("anika" +val.getElementName());

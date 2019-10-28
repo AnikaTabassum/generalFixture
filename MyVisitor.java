@@ -1,14 +1,18 @@
 package smellProject;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.ast.body.BodyDeclaration;
@@ -19,23 +23,27 @@ public class MyVisitor extends VoidVisitorAdapter<Void> {
     private MethodDeclaration currentMethod = null;
     TestMethod amartestMethod;
     private Set<String> variableCount = new HashSet();
-    private List<TestMethod> smellyMethodList;
-    private MethodDeclaration setupMethod;
-    private List<MethodDeclaration> methodList;
+    private List<TestMethod> smellyMethodList= new ArrayList<>();
+    private MethodDeclaration setupMethod= new MethodDeclaration();
+    private List<MethodDeclaration> methodList= new ArrayList<>();
     
-    private List<String> setupFields;
-    private List<FieldDeclaration> fieldList;
-    
+    private List<String> setupFields= new ArrayList<>();
+    private List<FieldDeclaration> fieldList= new ArrayList<>();
+    public String filePath;
     public MyVisitor(List<MethodDeclaration> methodList, MethodDeclaration setupMethod, List<String> setupFields,
-            List<TestMethod> smellyMethodList, List<FieldDeclaration> fieldList) {
+            List<TestMethod> smellyMethodList, List<FieldDeclaration> fieldList, String filePath) {
                 this.methodList=methodList;
                 this.setupFields=setupFields;
-                
+                this.filePath=filePath;
                 this.setupMethod=setupMethod;
                 this.smellyMethodList=smellyMethodList;
                 this.fieldList=fieldList;
     }
-    public List<TestMethod> testMethods= new ArrayList<>();
+    public MyVisitor(String parentFilePath) {
+    	this.filePath=parentFilePath;
+		// TODO Auto-generated constructor stub
+	}
+	public List<TestMethod> testMethods= new ArrayList<>();
 
 
     public List<MethodDeclaration> getMethodList(){
@@ -69,7 +77,32 @@ public class MyVisitor extends VoidVisitorAdapter<Void> {
     public void visit(ClassOrInterfaceDeclaration n, Void arg) {
         NodeList<BodyDeclaration<?>> bodymembers = n.getMembers();
         int i=0;
+        
+        NodeList <ClassOrInterfaceType>exte=n.getExtendedTypes();
+        if (exte.isNonEmpty()) {
+        CheckSubclasses cs= new CheckSubclasses(n, exte, filePath);
+        try {
+			cs.checkExtended();
+			fieldList=cs.getFiledListForParent();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        }
+        
+        /*Optional<Node> classes= n.getParentNode();
+        String yu=classes.toString();
+        if (yu.contains("class")&& yu.contains("public")&&yu.contains("test")&& !yu.contains("import")&& !yu.contains("package")){
+        	System.out.println("this class "+yu+"for "+ n.getNameAsString());
+        }*/
+        
+        /*for (ClassOrInterfaceType x: exte) {
+        	System.out.println("3333333333333333333333333333333333333 "+x.toString()+" for "+n.getNameAsString());
+        }*/
+        
+        
        while(i<bodymembers.size()){
+    	   System.out.println(bodymembers.get(0));
            if (bodymembers.get(i) instanceof FieldDeclaration) {
                fieldList.add((FieldDeclaration) bodymembers.get(i));
            }

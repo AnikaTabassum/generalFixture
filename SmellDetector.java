@@ -29,7 +29,7 @@ public class SmellDetector {
             System.out.println(filePath);
             myComp = JavaParser.parse(fis);
         }
-        GeneralFixture gf= new GeneralFixture();
+        GeneralFixture gf= new GeneralFixture(filePath);
         //testFile.setTestFileNameWithoutExtension(fileNameWithoutExtension);
         String testFileName=testFile.getTestFileNameWithoutExtension();
         hasSetup=gf.runAnalysis(myComp,testFileName);
