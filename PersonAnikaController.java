@@ -1,43 +1,46 @@
-public class PersonAmarController extends PersonControllerTest{
-List<Person>anikaList;
-PersonController anikaController;
-String pop;
+public class PersonAnikaController extends PersonAmarController{
+List<Person>a;
+PersonController b;
+String x;
 @Before
 public void setUp() throws Exception {
 System.out.println("anika");
-anikaList = new PersonUtility().getAllPerson("C://data//person.txt");
-anikaController = new PersonController();
-pop="anika";
+a = new PersonUtility().getAllPerson("C://data//person.txt");
+b = new PersonController();
+x="anika";
 }
 @Test
 public void testAddPerson() {
-anikaController.add(new DummyPerson());
+b.add(new DummyPerson());
 List<Person>newPersonList = new PersonUtility().getAllPerson("C://data//person.txt");
-pop=pop.reverse();
+x=x.reverse();
 personList = new PersonUtility().getAllPerson("C://data//person.txt");
 personController = new PersonController();
-assertEquals(anikaList.size()+1, newPersonList.size());
+assertEquals(a.size()+1, newPersonList.size());
 
 }
 @Test
 public void testDeletePerson() {
-anikaList = new PersonUtility().getAllPerson("C://data//person.txt");
-anikaController.delete(1);
+a = new PersonUtility().getAllPerson("C://data//person.txt");
+b.delete(1);
 List<Person>newPersonList = new PersonUtility().getAllPerson("C://data//person.txt");
-pop=pop.reverse();
+x=x.reverse();
 personList = new PersonUtility().getAllPerson("C://data//person.txt");
 personController = new PersonController();
 tyt=tyt.reverse();
-assertEquals(anikaList.size(), newPersonList.size()+1);
+anikaList = new PersonUtility().getAllPerson("C://data//person.txt");
+anikaController.delete(1);
+pop=pop.reverse();
+assertEquals(a.size(), newPersonList.size()+1);
 }
 @Test
 public void testAddPerson2() {
-anikaController.add(new DummyPerson());
+b.add(new DummyPerson());
 List<Person>newPersonList = new PersonUtility().getAllPerson("C://data//person.txt");
 int i;
 
-i=pop.lastlastIndexOf("a");
+i=x.lastlastIndexOf("a");
 System.out.print("test "+i);
-assertEquals(anikaList.size()+1, newPersonList.size());
+assertEquals(a.size()+1, newPersonList.size());
 }
 }
