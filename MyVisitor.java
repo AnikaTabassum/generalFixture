@@ -26,7 +26,7 @@ public class MyVisitor extends VoidVisitorAdapter<Void> {
     private List<TestMethod> smellyMethodList= new ArrayList<>();
     private MethodDeclaration setupMethod= new MethodDeclaration();
     private List<MethodDeclaration> methodList= new ArrayList<>();
-    
+    private List<String> parentSetupFields= new ArrayList<>();
     private List<String> setupFields= new ArrayList<>();
     private List<FieldDeclaration> fieldList= new ArrayList<>();
     public String filePath;
@@ -73,6 +73,7 @@ public class MyVisitor extends VoidVisitorAdapter<Void> {
         
     }
     
+    
     @Override
     public void visit(ClassOrInterfaceDeclaration n, Void arg) {
         NodeList<BodyDeclaration<?>> bodymembers = n.getMembers();
@@ -84,10 +85,15 @@ public class MyVisitor extends VoidVisitorAdapter<Void> {
         try {
 			cs.checkExtended();
 			fieldList=cs.getFiledListForParent();
+			parentSetupFields=cs.getSetupFields();
+			setupFields.addAll(parentSetupFields);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        }
+        for (FieldDeclaration f: fieldList) {
+        	System.out.println("field-----1 "+f.toString());
         }
         
         /*Optional<Node> classes= n.getParentNode();
@@ -100,11 +106,14 @@ public class MyVisitor extends VoidVisitorAdapter<Void> {
         	System.out.println("3333333333333333333333333333333333333 "+x.toString()+" for "+n.getNameAsString());
         }*/
         
-        
+        int j=0;
        while(i<bodymembers.size()){
     	   System.out.println(bodymembers.get(0));
+    	   
            if (bodymembers.get(i) instanceof FieldDeclaration) {
                fieldList.add((FieldDeclaration) bodymembers.get(i));
+               //System.out.println("------------------------- "+fieldList.get(j));
+               j++;
            }
            
             if (bodymembers.get(i) instanceof MethodDeclaration) {
@@ -128,6 +137,9 @@ public class MyVisitor extends VoidVisitorAdapter<Void> {
             
             i++;
         }
+       for (FieldDeclaration f: fieldList) {
+       	System.out.println("field----9 "+f.toString());
+       }
        
         //printAllMethods(methodList);
     }

@@ -19,6 +19,7 @@ public class GeneralFixture {
     private List<MethodDeclaration> methodList= new ArrayList<>();
     
     private List<String> setupFields= new ArrayList<>();
+    private List<String> parentSetupFields= new ArrayList<>();
     private List<FieldDeclaration> fieldList= new ArrayList<>();
     private List<TestMethod> testMethods= new ArrayList<>();
     private List<String> smellyField;
@@ -51,6 +52,7 @@ public class GeneralFixture {
         smellyField=amarVisitor.getProblemField();
         Optional<BlockStmt> blockStmt ;   
         NodeList nodeList;
+        
         if (setupMethod==null) {
         	System.out.println("there is no setup method in the test class");
         	return false;
@@ -59,21 +61,29 @@ public class GeneralFixture {
         	blockStmt = setupMethod.getBody();            
             nodeList = blockStmt.get().getStatements();
             int i=0;
+            int index=0;
             while (i<nodeList.size()){
                 int j=0;
                 while(j<fieldList.size()){
+                	
                 	NodeList<VariableDeclarator> variables=fieldList.get(j).getVariables();
                 	int k=0;
                     while(k < variables.size()) {
+                    	//System.out.println("gggggggggggggfffffffffffffffff "+variables.get(k));
                         if (nodeList.get(i) instanceof ExpressionStmt) {
                             ExpressionStmt expressionStmt = (ExpressionStmt) nodeList.get(i);
-                            //System.out.println(expressionStmt.toString());
+                            System.out.println("expr "+expressionStmt.toString());
+                            //System.out.println("variabl name "+variables.get(k));
+                            //setupFields.add(variables.get(k).toString());
                             if (expressionStmt.getExpression() instanceof AssignExpr) {
                                 AssignExpr assignExpr = (AssignExpr) expressionStmt.getExpression();
                                 String variableName=variables.get(k).getNameAsString();
                                 String expressionName=assignExpr.getTarget().toString();
                                 if (variableName.equals(expressionName)) {
-                                    setupFields.add(expressionName);
+                                	setupFields.add(expressionName);
+                                	System.out.println("setupField "+setupFields.get(index));
+                                    
+                                    index++;
                                 }
                             }
                         }
@@ -92,6 +102,12 @@ public class GeneralFixture {
         return true;
     }
     
+    public MethodDeclaration getSetupMethod() {
+    	return setupMethod;
+    }
+    public List<String> getSetupFields() {
+    	return setupFields;
+    }
     public List<MethodDeclaration> getMethodList(){
 		return methodList;  	
     }
